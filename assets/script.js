@@ -4,9 +4,16 @@ const stageWidth = window.innerWidth-40;
 const stageHeight = window.innerHeight-40;
 const stage = acgraph.create('container', stageWidth, stageHeight);
 
-const data = Array.from({length: Math.floor(Math.random() * stageWidth / 20)}, () => Math.floor(Math.random() * (stageHeight - 30) / 10));
+function getRandomArray() {
+  const arr = Array.from({length: Math.floor(Math.random() * stageWidth / 20)}, () => Math.floor(Math.random() * (stageHeight - 30) / 10));
+  if (arr.length > 1) {
+    return arr
+  } else {
+    getRandomArray();
+  }
+}
 
-console.log((stageHeight - 30) / 10, stageHeight/10);
+const data = getRandomArray();
 
 const axispath = stage.path();
 const dataLayer = stage.layer().translate(15, -15);
@@ -25,8 +32,6 @@ axispath
 
 acgraph.vector.primitives.triangleUp(axispath, 15, 15, 5).fill('black');
 acgraph.vector.primitives.triangleRight(axispath, stageWidth - 15, stageHeight - 15, 5).fill('black');
-
-stage.suspend();
 
 data.forEach((y, x) => {
   const dot = dots
@@ -60,6 +65,4 @@ data.forEach((y, x) => {
 });
 
 graphpath.close();
-
-stage.resume();
 
