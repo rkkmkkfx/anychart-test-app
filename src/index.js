@@ -1,5 +1,7 @@
-var width = window.innerWidth-40;
-var height = window.innerHeight-40;
+goog.require('Drawer');
+
+var width = window.innerWidth - 40;
+var height = window.innerHeight - 100;
 var input = document.getElementById('dataInput');
 input.addEventListener('keypress', function(ev) {
   if (ev.key === ' ') {
