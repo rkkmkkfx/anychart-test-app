@@ -60,6 +60,7 @@ Drawer.prototype.drawTooltip = function(dot, x, y) {
   } else {
     text.translate(text.getWidth() / 4, -text.getHeight() / 2);
   }
+
   var rect = this.labels.rect(text.getX() - 3, text.getY() - 3, text.getWidth() + 6, text.getHeight() + 6).zIndex('-1').fill("gold").visible(false);
 
   return {
