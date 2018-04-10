@@ -108,7 +108,7 @@ Drawer.prototype.draw = function() {
     var dot = this.drawDot(x, y);
     var tooltip = this.drawTooltip(dot, x, y);
     this.addListeners(dot, tooltip);
-    this.drawLine(x, y, data[x + 1]);
+    this.drawLine(x, y, this.data[x + 1]);
   }
   this.graphpath.close();
 };

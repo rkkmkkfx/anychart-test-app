@@ -1,20 +1,16 @@
-'use strict';
 var width = window.innerWidth-40;
 var height = window.innerHeight-40;
-
-function getRandomArray() {
-  var l = Math.floor(Math.random() * width / 20);
-  var arr = [];
-
-  for (var i = 0; i < l; i++) {
-    arr.push(Math.floor(Math.random() * (height - 30) / 10));
+var input = document.getElementById('dataInput');
+input.addEventListener('keypress', function(ev) {
+  if (ev.key === ' ') {
+    var data = ev.target.value.split(' ');
+    for (var i = 0; i < data.length; i++) {
+      data[i] = parseInt(data[i]);
+    }
+    document.getElementById('container').innerHTML = '';
+    var svgEl = document.querySelector('svg');
+    if (svgEl !== null) svgEl.remove();
+    var chart = new Drawer(data, width, height);
+    chart.draw();
   }
-
-  if (arr.length < 1) getRandomArray();
-  return arr;
-}
-
-var data = getRandomArray();
-var chart = new Drawer(data, width, height);
-
-chart.draw();
+});
