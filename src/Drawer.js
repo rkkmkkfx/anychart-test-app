@@ -5,35 +5,28 @@ goog.provide('Drawer');
 /**
  *
  * @param {Array<Number>} data массив чисел
- * @param {Number} w ширина графика
- * @param {Number} h высота графика
  * @constructor
  */
-Drawer = function(data, w, h) {
+Drawer = function(data) {
   this.data = data;
-  this.stageWidth = w;
-  this.stageHeight = h;
-  this.stage = acgraph.create('container', this.stageWidth, this.stageHeight);
-  this.axispath = this.stage.path();
-  this.dataLayer = this.stage.layer().translate(15, -15);
-  this.graphpath = this.dataLayer.path();
-  this.dotsLayer = this.dataLayer.layer();
-  this.labels = this.dataLayer.layer();
+  this.stageWidth = stage.width();
+  this.stageHeight = stage.height();
 };
 
 /**
  *
  */
-Drawer.prototype.drawAxis = function() {
-  this.axispath
+Drawer.prototype.drawAxis = function(layer) {
+  layer
     .stroke('black')
     .moveTo(this.stageWidth - 15, this.stageHeight - 15)
     .lineTo(15, this.stageHeight - 15)
     .moveTo(15, 15)
     .lineTo(15, this.stageHeight - 15)
+    .zIndex('-1')
     .close();
-  acgraph.vector.primitives.triangleUp(this.axispath, 15, 15, 5).fill('black');
-  acgraph.vector.primitives.triangleRight(this.axispath, this.stageWidth - 15, this.stageHeight - 15, 5).fill('black');
+  acgraph.vector.primitives.triangleUp(layer, 15, 15, 5).fill('black');
+  acgraph.vector.primitives.triangleRight(layer, this.stageWidth - 15, this.stageHeight - 15, 5).fill('black');
 };
 
 /**
@@ -43,46 +36,7 @@ Drawer.prototype.drawAxis = function() {
  * @returns {Object}
  */
 Drawer.prototype.drawDot = function(x, y) {
-  return this.dotsLayer.circle(x * 20, this.stageHeight - y * 10, 5).zIndex(2).fill('red');
-};
-
-/**
- *
- * @param {Object} dot
- * @param {Number} x
- * @param {Number} y
- * @returns {{text: Object, rect: Object}}
- */
-Drawer.prototype.drawTooltip = function(dot, x, y) {
-  var text = this.labels.text(dot.centerX(), dot.centerY(), 'x=' + x + ', y=' + y).visible(false);
-  if (dot.centerX() > this.stageWidth / 2) {
-    text.translate(-text.getWidth() - dot.getWidth() * 1.5, -text.getHeight() / 2);
-  } else {
-    text.translate(text.getWidth() / 4, -text.getHeight() / 2);
-  }
-
-  var rect = this.labels.rect(text.getX() - 3, text.getY() - 3, text.getWidth() + 6, text.getHeight() + 6).zIndex('-1').fill("gold").visible(false);
-
-  return {
-    text: text,
-    rect: rect
-  }
-};
-
-/**
- *
- * @param {Object} dot
- * @param {Object} tooltip
- */
-Drawer.prototype.addListeners = function(dot, tooltip) {
-  dot.listen('mouseover', function() {
-    tooltip.text.visible(true);
-    tooltip.rect.visible(true);
-  });
-  dot.listen('mouseout', function() {
-    tooltip.text.visible(false);
-    tooltip.rect.visible(false);
-  });
+  return new Dot(x, y, this.dataLayer).addTooltip().addListeners();
 };
 
 /**
@@ -101,13 +55,15 @@ Drawer.prototype.drawLine = function(x, y, nextY) {
 /**
  *
  */
-Drawer.prototype.draw = function() {
-  this.drawAxis();
+Drawer.prototype.draw = function(stage) {
+  this.dataLayer = stage.layer().translate(15, -15);
+  this.axispath = stage.path();
+  this.graphpath = this.dataLayer.path();
+
+  this.drawAxis(this.axispath);
   for (var x = 0; x < this.data.length; x++) {
     var y = this.data[x];
-    var dot = this.drawDot(x, y);
-    var tooltip = this.drawTooltip(dot, x, y);
-    this.addListeners(dot, tooltip);
+    this.drawDot(x, y);
     this.drawLine(x, y, this.data[x + 1]);
   }
   this.graphpath.close();
